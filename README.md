@@ -75,6 +75,11 @@ Create a `.env` file in the project root based on `.env.example`:
    - Saves text notes linked to the current `sessionId` with a timestamp into MongoDB.
 4. **`list_notes`**:
    - Retrieves all notes stored for the current session, sorted oldest first.
+5. **`get_weather`**:
+   - Geocodes any city via Open-Meteo Geocoding API and retrieves current weather conditions (temperature, apparent temperature, humidity, wind speed, condition description) without an API key.
+6. **`fetch_url`**:
+   - Safely reads and extracts text content from public web pages (HTTP and HTTPS).
+   - Includes basic SSRF protection blocking localhost and private network addresses (IPv4 ranges, `.internal`, `.local`), enforces a 10-second timeout, strips HTML/CSS/JS, collapses whitespace, and caps output at 8000 characters.
 
 ## How to Add a New Tool
 
