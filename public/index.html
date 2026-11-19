@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Personal Agent</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --user-bubble: #dbeafe;
+      --user-text: #1e3a8a;
+      --bot-bubble: #f1f5f9;
+      --bot-text: #0f172a;
+      --error-bubble: #fee2e2;
+      --error-text: #991b1b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #090d16;
+        --card-bg: #131b2e;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #1e293b;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --user-bubble: #1e3a5f;
+        --user-text: #dbeafe;
+        --bot-bubble: #1a2234;
+        --bot-text: #f8fafc;
+        --error-bubble: #451a1a;
+        --error-text: #fca5a5;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 2rem);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .auth-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .auth-row input {
+      flex: 1;
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    #log {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .msg-wrap {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+    }
+
+    .msg-wrap.you {
+      align-self: flex-end;
+    }
+
+    .msg-wrap.bot, .msg-wrap.error {
+      align-self: flex-start;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .you .label {
+      text-align: right;
+    }
+
+    .bubble {
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    .you .bubble {
+      background: var(--user-bubble);
+      color: var(--user-text);
+      border-bottom-right-radius: 2px;
+    }
+
+    .bot .bubble {
+      background: var(--bot-bubble);
+      color: var(--bot-text);
+      border-bottom-left-radius: 2px;
+    }
+
+    .error .bubble {
+      background: var(--error-bubble);
+      color: var(--error-text);
+      border-bottom-left-radius: 2px;
+    }
+
+    form {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    #msg {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    #msg:focus {
+      border-color: var(--primary);
+    }
+
+    #sendBtn {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 1.25rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    #sendBtn:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    #sendBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <h1>Personal AI Agent</h1>
+        <button id="newChatBtn" type="button" class="btn-secondary">New chat</button>
+      </div>
+      <div class="auth-row">
+        <input id="secret" type="password" placeholder="Enter APP_SECRET (x-api-key)" autocomplete="off" />
+      </div>
+    </header>
+
+    <div id="log"></div>
+
+    <form id="chatForm">
+      <input id="msg" type="text" placeholder="Ask something..." autocomplete="off" maxlength="4000" />
+      <button id="sendBtn" type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const log = document.getElementById("log");
+    const secretInput = document.getElementById("secret");
+    const form = document.getElementById("chatForm");
+    const msgInput = document.getElementById("msg");
+    const sendBtn = document.getElementById("sendBtn");
+    const newChatBtn = document.getElementById("newChatBtn");
+
+    function getStorage(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+
+    function setStorage(key, val) {
+      try {
+        localStorage.setItem(key, val);
+      } catch {}
+    }
+
+    // Load saved APP_SECRET if available
+    const savedSecret = getStorage("app_secret");
+    if (savedSecret) {
+      secretInput.value = savedSecret;
+    }
+
+    secretInput.addEventListener("input", () => {
+      setStorage("app_secret", secretInput.value);
+    });
+
+    // Session ID management
+    let sessionId = getStorage("sid");
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      setStorage("sid", sessionId);
+    }
+
+    function appendMessage(role, text) {
+      const wrap = document.createElement("div");
+      wrap.className = "msg-wrap " + role;
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = role === "you" ? "You" : role === "error" ? "Error" : "Agent";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      wrap.appendChild(label);
+      wrap.appendChild(bubble);
+      log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+
+      return bubble;
+    }
+
+    newChatBtn.addEventListener("click", () => {
+      sessionId = crypto.randomUUID();
+      setStorage("sid", sessionId);
+      log.textContent = "";
+      appendMessage("bot", "Started a new chat session.");
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = msgInput.value.trim();
+      const secret = secretInput.value.trim();
+
+      if (!message) return;
+
+      if (!secret) {
+        appendMessage("error", "Please enter the APP_SECRET in the top bar first.");
+        return;
+      }
+
+      msgInput.value = "";
+      sendBtn.disabled = true;
+
+      appendMessage("you", message);
+      const loadingBubble = appendMessage("bot", "...");
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": secret,
+          },
+          body: JSON.stringify({ sessionId, message }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          loadingBubble.parentElement.className = "msg-wrap error";
+          loadingBubble.previousSibling.textContent = "Error";
+          loadingBubble.textContent = data.error || ("Request failed with status " + res.status);
+        } else {
+          loadingBubble.textContent = data.reply || "(no response)";
+        }
+      } catch (err) {
+        loadingBubble.parentElement.className = "msg-wrap error";
+        loadingBubble.previousSibling.textContent = "Error";
+        loadingBubble.textContent = "Network error: " + err.message;
+      } finally {
+        sendBtn.disabled = false;
+        msgInput.focus();
+        log.scrollTop = log.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>
