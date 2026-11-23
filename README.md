@@ -1,5 +1,8 @@
 # Personal AI Agent
 
+> [!NOTE]
+> **Educational & Learning Purpose**: This project was built for learning and educational purposes to demonstrate how to build an autonomous AI agent from scratch using Node.js, Express 5, Google Gemini tool calling, and MongoDB Atlas memory storage.
+
 A personal AI agent built with Node.js and Express 5 that talks to the Google Gemini API, supports multi-turn tool calling in an autonomous loop, persists conversation memory and notes in MongoDB Atlas, and serves a self-contained chat web interface. Designed to be completely free to host on Render.
 
 ## Project Architecture & Features
